@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vc-bench-v1.0.9'; // Updated Version
+const CACHE_NAME = 'vc-bench-v1.1.0';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

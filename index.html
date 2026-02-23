@@ -141,11 +141,12 @@
         #bench-btn { background: #333; color: white; border: 1px solid #444; }
         #bench-btn.active { background: #e74c3c; animation: pulse 1.5s infinite; }
         
+        .pip-btn { background: #444; color: white; border: 1px solid #555; }
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         .reset-btn { background: transparent; color: #666; font-size: 0.7rem; text-decoration: underline; }
 
-        /* NEW: Version Label Style */
         .version-tag {
             font-size: 0.6rem;
             color: #444;
@@ -182,7 +183,7 @@
     🚀 Update Available! Click to refresh.
 </div>
 
-<div class="card">
+<div class="card" id="main-card">
     <input type="text" id="device-label" value="DUT">
 
     <div class="cpu-section">
@@ -216,9 +217,10 @@
     </div>
 
     <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS BENCHMARK</button>
+    <button class="btn-action pip-btn" onclick="enterPiP()">ENABLE FLOATING VIEW</button>
     <button class="btn-action reset-btn" onclick="document.getElementById('pwd-modal').showModal()">Reset Metrics</button>
     
-    <div class="version-tag" id="app-version">BUILD v1.0.9</div>
+    <div class="version-tag">BUILD v1.1.0</div>
 </div>
 
 <dialog id="pwd-modal">
@@ -231,9 +233,6 @@
 </dialog>
 
 <script>
-    // Version Control
-    const VERSION = "v1.0.9";
-
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
             reg.addEventListener('updatefound', () => {
@@ -245,6 +244,46 @@
                 });
             });
         });
+    }
+
+    // Floating View Logic (PiP)
+    async function enterPiP() {
+        if ('documentPictureInPicture' in window) {
+            const pipWindow = await window.documentPictureInPicture.requestWindow({
+                width: 380,
+                height: 700,
+            });
+
+            // Move styles
+            [...document.styleSheets].forEach((styleSheet) => {
+                try {
+                    const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join('');
+                    const style = document.createElement('style');
+                    style.textContent = cssRules;
+                    pipWindow.document.head.appendChild(style);
+                } catch (e) {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = styleSheet.href;
+                    pipWindow.document.head.appendChild(link);
+                }
+            });
+
+            // Move the card
+            const card = document.getElementById('main-card');
+            pipWindow.document.body.appendChild(card);
+            pipWindow.document.body.style.background = "#1a1a1a";
+            pipWindow.document.body.style.margin = "0";
+            pipWindow.document.body.style.display = "flex";
+            pipWindow.document.body.style.justifyContent = "center";
+
+            // Return card when window closes
+            pipWindow.addEventListener("pagehide", () => {
+                document.body.appendChild(card);
+            });
+        } else {
+            alert("Document PiP is not supported or enabled in this browser.");
+        }
     }
 
     const canvas = document.getElementById('core-monitor');
