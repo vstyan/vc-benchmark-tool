@@ -26,6 +26,24 @@
             min-height: 100vh;
         }
 
+        /* NEW: Update Notification Toast */
+        #update-toast {
+            position: fixed;
+            bottom: 20px;
+            background: var(--mtk-orange);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 1000;
+            cursor: pointer;
+            font-weight: bold;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         .card {
             background: #242424;
             padding: 20px;
@@ -154,6 +172,10 @@
 </head>
 <body>
 
+<div id="update-toast" onclick="location.reload()">
+    🚀 Update Available! Click to refresh.
+</div>
+
 <div class="card">
     <input type="text" id="device-label" value="DUT">
 
@@ -201,7 +223,19 @@
 </dialog>
 
 <script>
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    // 1. Service Worker & Update Logic
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        document.getElementById('update-toast').style.display = 'block';
+                    }
+                });
+            });
+        });
+    }
 
     const canvas = document.getElementById('core-monitor');
     const ctx = canvas.getContext('2d');
