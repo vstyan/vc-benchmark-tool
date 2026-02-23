@@ -1,0 +1,16 @@
+{
+  "name": "Video Conference Benchmark Tool",
+  "short_name": "VC Benchmark",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#EF7F1A",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
