@@ -3,7 +3,7 @@
  * Handles offline caching of core assets.
  */
 
-const CACHE_NAME = 'vc-bench-v1.0.0';
+const CACHE_NAME = 'vc-bench-v1.0.1';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
