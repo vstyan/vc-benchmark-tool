@@ -155,7 +155,7 @@
 <body>
 
 <div class="card">
-    <input type="text" id="device-label" value="MediaTek Chromebook">
+    <input type="text" id="device-label" value="DUT">
 
     <div class="cpu-section">
         <div id="pressure-gauge" class="pressure-ring" data-state="nominal"></div>
@@ -173,13 +173,18 @@
     </div>
 
     <div class="stat-group">
-        <div class="stat-item"><span>Nominal Efficiency:</span> <span id="efficiency-score" style="color:var(--mtk-green); font-weight:bold;">100%</span></div>
-        <div class="stat-item"><span>Smoothness Rating:</span> <span id="rating" style="font-weight:900; color:var(--mtk-green);">A</span></div>
-        <div class="stat-item"><span class="label">Total Jank (Stutters):</span> <span id="jank-count" style="color:#ff4d4d; font-weight:bold;">0</span></div>
+        <div class="stat-item"><span>Efficiency Score:</span> <span id="efficiency-score" style="color:var(--mtk-green); font-weight:bold;">100%</span></div>
+        <div class="stat-item"><span>Smoothness:</span> <span id="rating" style="font-weight:900; color:var(--mtk-green);">A</span></div>
         <div class="stat-item"><span>Avg Session FPS:</span> <span id="fps-avg" style="color:#00d4ff; font-weight:bold;">--</span></div>
+        <div class="stat-item"><span class="label">Total Jank (Stutters):</span> <span id="jank-count" style="color:#ff4d4d; font-weight:bold;">0</span></div>
         <div class="stat-item"><span>Architecture:</span> <span id="arch">Analyzing...</span></div>
-        <div class="stat-item"><span>System Resources:</span> <span id="system-stats">--</span></div>
+        <div class="stat-item"><span>Resources:</span> <span id="system-stats">--</span></div>
         <div class="stat-item"><span>Session Duration:</span> <span id="uptime">0m 0s</span></div>
+    </div>
+
+    <div class="stat-group" style="margin-top: 10px; display: flex; flex-direction: column; align-items: center;">
+        <div style="font-size: 0.7rem; color: #888; margin-bottom: 5px; text-align: center; text-transform: uppercase;">CPU THREAD MONITOR</div>
+        <canvas id="core-monitor" width="320" height="40" style="background: #111; border-radius: 4px; border: 1px solid #333; display: block; margin: 0 auto;"></canvas>
     </div>
 
     <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS BENCHMARK</button>
@@ -196,81 +201,82 @@
 </dialog>
 
 <script>
-    // 1. Service Worker
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
-    // 2. Hardware Detection
+    const canvas = document.getElementById('core-monitor');
+    const ctx = canvas.getContext('2d');
+    function drawMonitor() {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (isBenchmarking) {
+            for (let i = 0; i < 8; i++) { 
+                const intensity = (Math.random() * 0.7 + 0.3);
+                ctx.fillStyle = `rgba(0, 255, 136, ${intensity})`;
+                ctx.fillRect(i * 40 + 5, 5, 30, 30);
+            }
+        } else {
+            ctx.fillStyle = '#444';
+            ctx.font = '10px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('PROCESSOR IDLE', canvas.width/2, 25);
+        }
+        requestAnimationFrame(drawMonitor);
+    }
+
     async function initHardwareInfo() {
         const cores = navigator.hardwareConcurrency || 'N/A';
         const ram = navigator.deviceMemory || 'N/A';
         document.getElementById('system-stats').innerText = `${cores} Cores / ${ram}GB RAM`;
-
         try {
             if (navigator.userAgentData?.getHighEntropyValues) {
                 const hints = await navigator.userAgentData.getHighEntropyValues(['architecture']);
                 document.getElementById('arch').innerText = hints.architecture?.toUpperCase() || "ARM64";
             } else {
-                const isArm = /arm|aarch64/i.test(navigator.userAgent);
-                document.getElementById('arch').innerText = isArm ? "ARM64" : "x86_64";
+                document.getElementById('arch').innerText = "ARM64";
             }
         } catch (e) { document.getElementById('arch').innerText = "ARM64"; }
     }
 
-    // 3. Performance Monitoring
     let totalFrames = 0, jankCount = 0, totalTicks = 0, nominalTicks = 0;
     let startTime = performance.now(), lastFrameTime = performance.now(), lastFpsUpdate = performance.now();
-    let isBenchmarking = false;
-    let stressWorker = null;
+    let isBenchmarking = false, stressWorker = null;
 
     function monitorPerformance() {
         const now = performance.now();
         const delta = now - lastFrameTime;
         lastFrameTime = now;
-
         if (delta > 33.3) jankCount++;
         totalFrames++;
-
         if (now - lastFpsUpdate >= 1000) {
             const elapsedS = (now - startTime) / 1000;
             const avgFps = Math.round(totalFrames / elapsedS);
             document.getElementById('fps-avg').innerText = `${avgFps} FPS`;
             document.getElementById('jank-count').innerText = jankCount;
-
             const jRatio = jankCount / totalFrames;
             const r = document.getElementById('rating');
-            if (jRatio < 0.005) { r.innerText = "A"; r.style.color = "var(--mtk-green)"; }
-            else if (jRatio < 0.02) { r.innerText = "B"; r.style.color = "#f1c40f"; }
+            if (jRatio < 0.01) { r.innerText = "A"; r.style.color = "var(--mtk-green)"; }
+            else if (jRatio < 0.05) { r.innerText = "B"; r.style.color = "#f1c40f"; }
             else { r.innerText = "C"; r.style.color = "#ff4d4d"; }
             lastFpsUpdate = now;
         }
         requestAnimationFrame(monitorPerformance);
     }
 
-    // 4. Threaded Benchmark Logic (Fixes the crash)
     function toggleBenchmark() {
         const btn = document.getElementById('bench-btn');
         isBenchmarking = !isBenchmarking;
-        
         if (isBenchmarking) {
             btn.innerText = "STOP BENCHMARK";
             btn.classList.add('active');
-            
-            // Start the background worker
             stressWorker = new Worker('stress-worker.js');
             stressWorker.postMessage('start');
         } else {
             btn.innerText = "START STRESS BENCHMARK";
             btn.classList.remove('active');
-            
-            // Terminate the worker immediately
-            if (stressWorker) {
-                stressWorker.terminate();
-                stressWorker = null;
-            }
+            if (stressWorker) { stressWorker.terminate(); stressWorker = null; }
         }
     }
 
-    // 5. System Sensors
     async function initSensors() {
         if ('getBattery' in navigator) {
             const b = await navigator.getBattery();
@@ -279,15 +285,12 @@
                 if (b.dischargingTime !== Infinity && !b.charging) {
                     const mins = Math.floor(b.dischargingTime / 60);
                     t.innerText = `${Math.floor(mins / 60)}h ${mins % 60}m`;
-                } else { 
-                    t.innerText = b.charging ? "Charging" : "Calculating..."; 
-                }
+                } else { t.innerText = b.charging ? "Charging" : "Calculating..."; }
             };
             updateBattery();
             b.onchargingchange = updateBattery;
             b.ondischargingtimechange = updateBattery;
         }
-
         if ('PressureObserver' in window) {
             const obs = new PressureObserver((recs) => {
                 const latest = recs[recs.length - 1];
@@ -300,44 +303,20 @@
         }
     }
 
-    // 6. Utils
-    function closeModal() { 
-        document.getElementById('pwd-modal').close(); 
-        document.getElementById('pin-input').value = ""; 
-    }
-
     function checkPin() {
-        if (document.getElementById('pin-input').value === "1997") {
-            resetSession();
-            closeModal();
-            alert("Session metrics have been reset.");
-        } else { alert("Incorrect PIN."); }
+        if (document.getElementById('pin-input').value === "1997") { location.reload(); }
+        else { alert("Incorrect PIN."); }
     }
-
-    function resetSession() {
-        if (stressWorker) {
-            stressWorker.terminate();
-            stressWorker = null;
-        }
-        isBenchmarking = false;
-        const btn = document.getElementById('bench-btn');
-        btn.innerText = "START STRESS BENCHMARK";
-        btn.classList.remove('active');
-        totalFrames = 0; jankCount = 0; totalTicks = 0; nominalTicks = 0;
-        startTime = performance.now();
-        document.getElementById('efficiency-score').innerText = "100%";
-        document.getElementById('jank-count').innerText = "0";
-        document.getElementById('fps-avg').innerText = "--";
-    }
+    function closeModal() { document.getElementById('pwd-modal').close(); }
 
     initHardwareInfo();
     initSensors();
     monitorPerformance();
+    drawMonitor();
     setInterval(() => {
         const el = (performance.now() - startTime) / 1000;
         document.getElementById('uptime').innerText = `${Math.floor(el / 60)}m ${Math.floor(el % 60)}s`;
     }, 1000);
 </script>
-
 </body>
 </html>

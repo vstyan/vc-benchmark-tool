@@ -1,28 +1,16 @@
-/**
- * Service Worker for Video Conference Benchmark Tool
- * Handles offline caching of core assets.
- */
-
-const CACHE_NAME = 'vc-bench-v1.0.1';
+const CACHE_NAME = 'vc-bench-v1.0.7'; // Bumped version
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './manifest.json',
-    './stress-worker.js' // Added to cache
+    './stress-worker.js',
+    './icon.png'
 ];
 
-// Install: Cache essential files
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(ASSETS_TO_CACHE))
-    );
+self.addEventListener('install', (e) => {
+    e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS_TO_CACHE)));
 });
 
-// Fetch: Serve from cache if available, otherwise hit network
-self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request)
-            .then((response) => response || fetch(event.request))
-    );
+self.addEventListener('fetch', (e) => {
+    e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
 });
