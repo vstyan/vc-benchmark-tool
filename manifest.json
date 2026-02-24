@@ -1,6 +1,6 @@
 {
-  "name": "Video Conference Benchmark Tool",
-  "short_name": "VC Benchmark",
+  "name": "Benchmark Tool",
+  "short_name": "Benchmark Tool",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1a1a1a",

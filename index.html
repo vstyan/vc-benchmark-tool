@@ -6,7 +6,6 @@
     <title>Benchmark Tool</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* CSS Variables: Centralized theme management for MediaTek branding */
         :root {
             --mtk-orange: #EF7F1A;
             --bg-dark: #1a1a1a;
@@ -24,7 +23,6 @@
             min-height: 100vh;
         }
 
-        /* Update Toast: Notifies user when a new Service Worker version is detected */
         #update-toast {
             position: fixed; bottom: 20px;
             background: var(--mtk-orange);
@@ -59,7 +57,6 @@
             margin: 10px 0 20px 0;
         }
 
-        /* Pressure Ring: Rotates and changes color based on OS-level CPU pressure */
         .pressure-ring {
             border: 10px solid var(--border-subtle);
             border-top: 10px solid var(--mtk-green);
@@ -103,7 +100,6 @@
         .reset-btn { background: transparent; color: #666; font-size: 0.7rem; text-decoration: underline; }
         .version-tag { font-size: 0.6rem; color: #444; text-align: center; margin-top: 15px; letter-spacing: 1px; }
 
-        /* Dialog Styling: Used for both Admin Pin and Info Modals */
         dialog {
             background: #222; color: white;
             border: 2px solid var(--mtk-orange);
@@ -190,7 +186,7 @@
     <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS BENCHMARK</button>
     <button class="btn-action reset-btn" onclick="document.getElementById('pwd-modal').showModal()">Reset Metrics</button>
     
-    <div class="version-tag">BUILD v1.1.9</div>
+    <div class="version-tag">BUILD v1.1.10</div>
 </div>
 
 <dialog id="efficiency-modal">
@@ -235,17 +231,12 @@
 </dialog>
 
 <script>
-    /**
-     * SERVICE WORKER REGISTRATION
-     * Enables offline capabilities and version updates.
-     */
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
             reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // Display the update toast when a new version is cached
                         document.getElementById('update-toast').style.display = 'block';
                     }
                 });
@@ -253,19 +244,13 @@
         });
     }
 
-    /**
-     * CORE MONITOR ANIMATION
-     * Creates a 'Knight Rider' style oscillating bar on the canvas when benchmarking is active.
-     */
     const canvas = document.getElementById('core-monitor');
     const ctx = canvas.getContext('2d');
-    let scanPos = 0;
-    let direction = 1;
+    let scanPos = 0, direction = 1;
 
     function drawMonitor() {
         ctx.fillStyle = '#111';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
         if (isBenchmarking) {
             scanPos += 5 * direction;
             if (scanPos >= canvas.width - 40 || scanPos <= 0) direction *= -1;
@@ -282,16 +267,11 @@
         requestAnimationFrame(drawMonitor);
     }
 
-    /**
-     * HARDWARE INFO INITIALIZATION
-     * Detects CPU architecture and available system memory.
-     */
     async function initHardwareInfo() {
         const cores = navigator.hardwareConcurrency || 'N/A';
         const ram = navigator.deviceMemory || 'N/A';
         document.getElementById('system-stats').innerText = `${cores} Cores / ${ram}GB RAM`;
         try {
-            // Uses User-Agent Client Hints for more accurate architecture detection
             if (navigator.userAgentData?.getHighEntropyValues) {
                 const hints = await navigator.userAgentData.getHighEntropyValues(['architecture']);
                 document.getElementById('arch').innerText = hints.architecture?.toUpperCase() || "ARM64";
@@ -299,31 +279,21 @@
         } catch (e) { document.getElementById('arch').innerText = "ARM64"; }
     }
 
-    /**
-     * PERFORMANCE MONITORING LOOP
-     * Uses requestAnimationFrame to calculate FPS and identify 'Jank' frames.
-     */
     let totalFrames = 0, jankCount = 0, totalTicks = 0, nominalTicks = 0;
     let startTime = performance.now(), lastFrameTime = performance.now(), lastFpsUpdate = performance.now();
     let isBenchmarking = false, stressWorker = null;
 
     function monitorPerformance() {
         const now = performance.now();
-        const delta = now - lastFrameTime; // Time taken to render the last frame
+        const delta = now - lastFrameTime;
         lastFrameTime = now;
-
-        // Threshold of 33.3ms correlates to 30FPS; exceeding this marks a 'Jank' frame
         if (delta > 33.3) jankCount++;
         totalFrames++;
-
-        // Update UI metrics once per second to reduce overhead
         if (now - lastFpsUpdate >= 1000) {
             const elapsedS = (now - startTime) / 1000;
             const avgFps = Math.round(totalFrames / elapsedS);
             document.getElementById('fps-avg').innerText = `${avgFps} FPS`;
             document.getElementById('jank-count').innerText = jankCount;
-            
-            // Grading logic for Smoothness Rating
             const jRatio = jankCount / totalFrames;
             const r = document.getElementById('rating');
             if (jRatio < 0.01) { r.innerText = "A"; r.style.color = "var(--mtk-green)"; }
@@ -335,29 +305,22 @@
         requestAnimationFrame(monitorPerformance);
     }
 
-    /**
-     * BENCHMARK CONTROL
-     * Launches a dedicated Web Worker to apply synthetic load without freezing the UI thread.
-     */
     function toggleBenchmark() {
         const btn = document.getElementById('bench-btn');
         isBenchmarking = !isBenchmarking;
         if (isBenchmarking) {
-            btn.innerText = "STOP BENCHMARK"; btn.classList.add('active');
+            btn.innerText = "STOP STRESS TEST";
+            btn.classList.add('active');
             stressWorker = new Worker('stress-worker.js');
             stressWorker.postMessage('start');
         } else {
-            btn.innerText = "START STRESS BENCHMARK"; btn.classList.remove('active');
+            btn.innerText = "START STRESS BENCHMARK";
+            btn.classList.remove('active');
             if (stressWorker) { stressWorker.terminate(); stressWorker = null; }
         }
     }
 
-    /**
-     * SYSTEM SENSORS
-     * Integrates with Battery Status API and PressureObserver API.
-     */
     async function initSensors() {
-        // Battery Tracking: Updates time-remaining estimation
         if ('getBattery' in navigator) {
             const b = await navigator.getBattery();
             const updateBattery = () => {
@@ -372,13 +335,11 @@
             b.ondischargingtimechange = updateBattery;
         }
 
-        // PressureObserver: Crucial for Efficiency Score. Tracks OS-reported CPU load states.
         if ('PressureObserver' in window) {
             const obs = new PressureObserver((recs) => {
                 const latest = recs[recs.length - 1];
                 document.getElementById('pressure-gauge').setAttribute('data-state', latest.state);
                 totalTicks++; 
-                // Efficiency = % of time OS reports 'nominal' (least stressed) state
                 if (latest.state === 'nominal') nominalTicks++;
                 document.getElementById('efficiency-score').innerText = Math.round((nominalTicks / totalTicks) * 100) + "%";
             }, { sampleInterval: 1000 });
@@ -386,23 +347,17 @@
         }
     }
 
-    /**
-     * UTILITY FUNCTIONS
-     * Admin Pin check and modal management.
-     */
     function checkPin() {
         if (document.getElementById('pin-input').value === "1234") { location.reload(); }
         else { alert("Incorrect PIN."); }
     }
     function closeModal() { document.getElementById('pwd-modal').close(); }
 
-    // INITIALIZATION SEQUENCE
     initHardwareInfo();
     initSensors();
     monitorPerformance();
     drawMonitor();
 
-    // Session Uptime Tracker
     setInterval(() => {
         const el = (performance.now() - startTime) / 1000;
         document.getElementById('uptime').innerText = `${Math.floor(el / 60)}m ${Math.floor(el % 60)}s`;

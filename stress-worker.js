@@ -1,6 +1,5 @@
 /**
  * Synthetic Stress Engine v2.0
- * Optimized for MediaTek Client Computing Research
  */
 let isRunning = false;
 
