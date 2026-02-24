@@ -1,5 +1,5 @@
-Video Conference Benchmark Tool
-A lightweight, high-performance Progressive Web App (PWA) designed to evaluate system stability and efficiency during video conferencing workloads. This tool is specifically optimized for MediaTek Chromebooks and provides deep insights into system performance under stress.
+Benchmark Tool
+A lightweight, high-performance Progressive Web App (PWA) designed to evaluate system stability and efficiency during loading workloads (i.e. video conferencing etc). This tool is specifically optimized for Chromebooks and provides deep insights into system performance under stress.
 
 🚀 Features
 Real-Time Performance Metrics: Tracks FPS, frame consistency, and "Total Jank" (stutters) to evaluate the smoothness of the video experience.
@@ -39,4 +39,4 @@ The app will now appear in your app drawer and can be launched without an intern
 📋 Admin Metrics Reset
 To maintain the integrity of long-term testing, session metrics can be reset via the Admin Portal.
 
-Default PIN: 1997 (Configurable in index.html).
+Default PIN: 1234 (Configurable in index.html).

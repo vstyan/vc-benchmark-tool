@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Conference Benchmark Tool</title>
+    <title>Benchmark Tool</title>
     <link rel="manifest" href="manifest.json">
     <style>
+        /* CSS Variables: Centralized theme management for MediaTek branding */
         :root {
             --mtk-orange: #EF7F1A;
             --bg-dark: #1a1a1a;
@@ -18,36 +19,27 @@
             font-family: 'Segoe UI', system-ui, sans-serif;
             background: var(--bg-dark);
             color: var(--text-light);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
         }
 
+        /* Update Toast: Notifies user when a new Service Worker version is detected */
         #update-toast {
-            position: fixed;
-            bottom: 20px;
+            position: fixed; bottom: 20px;
             background: var(--mtk-orange);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            display: none;
+            color: white; padding: 12px 20px;
+            border-radius: 8px; display: none;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            z-index: 1000;
-            cursor: pointer;
-            font-weight: bold;
-            animation: slideUp 0.3s ease-out;
+            z-index: 1000; cursor: pointer;
+            font-weight: bold; animation: slideUp 0.3s ease-out;
         }
 
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .card {
             background: #242424;
-            padding: 20px;
-            width: 100%;
-            max-width: 360px;
+            padding: 20px; width: 100%; max-width: 360px;
             border: 2px solid var(--mtk-orange);
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -55,124 +47,86 @@
         }
 
         #device-label {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--mtk-orange);
-            border: none;
-            background: transparent;
-            text-align: center;
-            width: 100%;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            outline: none;
+            font-size: 1.2rem; font-weight: 800;
+            color: var(--mtk-orange); border: none;
+            background: transparent; text-align: center;
+            width: 100%; text-transform: uppercase;
+            margin-bottom: 15px; outline: none;
         }
 
         .cpu-section {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            margin: 20px 0;
+            display: flex; align-items: center; justify-content: space-around;
+            margin: 10px 0 20px 0;
         }
 
+        /* Pressure Ring: Rotates and changes color based on OS-level CPU pressure */
         .pressure-ring {
             border: 10px solid var(--border-subtle);
             border-top: 10px solid var(--mtk-green);
             border-radius: 50%;
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             animation: spin 2s linear infinite;
             transition: border-color 0.4s ease;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         .pressure-ring[data-state="fair"] { border-top-color: #f1c40f; }
         .pressure-ring[data-state="serious"] { border-top-color: #e67e22; }
         .pressure-ring[data-state="critical"] { border-top-color: #e74c3c; animation-duration: 0.5s; }
 
-        .legend {
-            font-size: 0.7rem;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-weight: bold;
-        }
+        .legend { font-size: 0.7rem; display: flex; flex-direction: column; gap: 4px; font-weight: bold; }
 
         .highlight-container {
             background: rgba(239, 127, 26, 0.1);
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border: 1px solid rgba(239, 127, 26, 0.3);
+            padding: 15px; border-radius: 12px;
+            margin: 15px 0; border: 1px solid rgba(239, 127, 26, 0.3);
             text-align: center;
         }
 
-        .main-highlight {
-            font-size: 2rem;
-            font-weight: 900;
-            color: var(--mtk-orange);
-            margin-top: 5px;
-        }
+        .main-highlight { font-size: 2rem; font-weight: 900; color: var(--mtk-orange); margin-top: 5px; }
 
-        .stat-group {
-            margin-top: 15px;
-            font-size: 0.85rem;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 6px 0;
-        }
-
+        .stat-group { margin-top: 15px; font-size: 0.85rem; }
+        .stat-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding: 6px 0; align-items: center; }
+        
         .btn-action {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.1s;
+            width: 100%; padding: 12px;
+            border-radius: 8px; border: none;
+            font-weight: bold; cursor: pointer;
+            margin-top: 10px; transition: transform 0.1s;
         }
 
         .btn-action:active { transform: scale(0.98); }
         #bench-btn { background: #333; color: white; border: 1px solid #444; }
         #bench-btn.active { background: #e74c3c; animation: pulse 1.5s infinite; }
-        
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         .reset-btn { background: transparent; color: #666; font-size: 0.7rem; text-decoration: underline; }
+        .version-tag { font-size: 0.6rem; color: #444; text-align: center; margin-top: 15px; letter-spacing: 1px; }
 
-        .version-tag {
-            font-size: 0.6rem;
-            color: #444;
-            text-align: center;
-            margin-top: 15px;
-            letter-spacing: 1px;
-        }
-
+        /* Dialog Styling: Used for both Admin Pin and Info Modals */
         dialog {
-            background: #222;
-            color: white;
+            background: #222; color: white;
             border: 2px solid var(--mtk-orange);
-            border-radius: 12px;
-            padding: 20px;
-            width: 280px;
+            border-radius: 12px; padding: 20px; width: 280px;
         }
 
         dialog input {
-            background: #111;
-            color: white;
-            border: 1px solid #444;
-            padding: 12px;
-            width: 90%;
-            margin: 15px 0;
-            font-size: 1.5rem;
-            text-align: center;
-            border-radius: 8px;
+            background: #111; color: white;
+            border: 1px solid #444; padding: 12px;
+            width: 90%; margin: 15px 0;
+            font-size: 1.5rem; text-align: center; border-radius: 8px;
         }
+
+        .info-trigger {
+            cursor: pointer;
+            color: var(--mtk-orange);
+            font-size: 0.8rem;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        .modal-title { font-size: 1.1rem; font-weight: bold; color: var(--mtk-orange); margin-bottom: 12px; border-bottom: 1px solid #444; padding-bottom: 8px; }
+        .modal-body { font-size: 0.85rem; line-height: 1.5; color: #ccc; }
     </style>
 </head>
 <body>
@@ -184,41 +138,92 @@
 <div class="card">
     <input type="text" id="device-label" value="DUT">
 
+    <div style="font-size: 0.7rem; color: #888; text-align: center; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">CPU Loading</div>
+    
     <div class="cpu-section">
         <div id="pressure-gauge" class="pressure-ring" data-state="nominal"></div>
         <div class="legend">
             <div style="color:#00FF88;">● NOMINAL</div>
             <div style="color:#f1c40f;">● FAIR</div>
-            <div style="color:#e67e22;">● HIGH</div>
+            <div style="color:#e67e22;">● SERIOUS</div>
             <div style="color:#e74c3c;">● CRITICAL</div>
         </div>
     </div>
 
     <div class="highlight-container">
-        <div style="font-size: 0.7rem; text-transform: uppercase; font-weight: bold; opacity: 0.8;">Video Conference Time Remaining</div>
+        <div style="font-size: 0.7rem; text-transform: uppercase; font-weight: bold; opacity: 0.8;">Time Remaining On Battery</div>
         <div id="time-left" class="main-highlight">Analyzing...</div>
     </div>
 
     <div class="stat-group">
-        <div class="stat-item"><span>Efficiency Score:</span> <span id="efficiency-score" style="color:var(--mtk-green); font-weight:bold;">100%</span></div>
-        <div class="stat-item"><span>Smoothness:</span> <span id="rating" style="font-weight:900; color:var(--mtk-green);">A</span></div>
+        <div class="stat-item">
+            <span>
+                CPU Efficiency Score 
+                <span class="info-trigger" onclick="document.getElementById('efficiency-modal').showModal()">ⓘ</span>
+            </span> 
+            <span id="efficiency-score" style="color:var(--mtk-green); font-weight:bold;">100%</span>
+        </div>
+        <div class="stat-item">
+            <div>
+                <span>Smoothness Rating:</span> 
+                <span class="info-trigger" onclick="document.getElementById('smoothness-modal').showModal()">ⓘ</span>
+            </div>
+            <span id="rating" style="font-weight:900; color:var(--mtk-green);">A</span>
+        </div>
         <div class="stat-item"><span>Avg Session FPS:</span> <span id="fps-avg" style="color:#00d4ff; font-weight:bold;">--</span></div>
-        <div class="stat-item"><span>Total Jank:</span> <span id="jank-count" style="color:#ff4d4d; font-weight:bold;">0</span></div>
+        <div class="stat-item">
+            <div>
+                <span>Total Jank:</span> 
+                <span class="info-trigger" onclick="document.getElementById('jank-modal').showModal()">ⓘ</span>
+            </div>
+            <span id="jank-count" style="color:#ff4d4d; font-weight:bold;">0</span>
+        </div>
         <div class="stat-item"><span>Architecture:</span> <span id="arch">Analyzing...</span></div>
         <div class="stat-item"><span>Resources:</span> <span id="system-stats">--</span></div>
         <div class="stat-item"><span>Uptime:</span> <span id="uptime">0m 0s</span></div>
     </div>
 
-    <div class="stat-group" style="margin-top: 10px; display: flex; flex-direction: column; align-items: center;">
-        <div style="font-size: 0.7rem; color: #888; margin-bottom: 5px; text-align: center; text-transform: uppercase;">CPU THREAD MONITOR</div>
-        <canvas id="core-monitor" width="320" height="40" style="background: #111; border-radius: 4px; border: 1px solid #333; display: block; margin: 0 auto;"></canvas>
+    <div class="stat-group" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center;">
+        <canvas id="core-monitor" width="320" height="20" style="background: #111; border-radius: 10px; border: 1px solid #333; display: block; margin: 0 auto;"></canvas>
     </div>
 
     <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS BENCHMARK</button>
     <button class="btn-action reset-btn" onclick="document.getElementById('pwd-modal').showModal()">Reset Metrics</button>
     
-    <div class="version-tag">BUILD v1.1.1</div>
+    <div class="version-tag">BUILD v1.1.9</div>
 </div>
+
+<dialog id="efficiency-modal">
+    <div class="modal-title">Efficiency Logic</div>
+    <div class="modal-body">
+        <p>This score represents the <strong>Percentage of time in Nominal state</strong> during the current session.</p>
+        <p>A higher percentage indicates the processor is handling the workload within its most energy-efficient thermal and power envelope.</p>
+    </div>
+    <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('efficiency-modal').close()">Close</button>
+</dialog>
+
+<dialog id="smoothness-modal">
+    <div class="modal-title">Smoothness Rating</div>
+    <div class="modal-body">
+        <p>Evaluates visual consistency based on the ratio of <strong>Jank Frames</strong> to <strong>Total Frames</strong>.</p>
+        <ul style="padding-left: 18px;">
+            <li><strong>Grade A:</strong> < 1% Jank</li>
+            <li><strong>Grade B:</strong> < 5% Jank</li>
+            <li><strong>Grade C:</strong> < 15% Jank</li>
+            <li><strong>Grade D:</strong> > 15% Jank</li>
+        </ul>
+    </div>
+    <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('smoothness-modal').close()">Close</button>
+</dialog>
+
+<dialog id="jank-modal">
+    <div class="modal-title">Total Jank</div>
+    <div class="modal-body">
+        <p>A <strong>Jank Frame</strong> is defined as any frame that takes longer than <strong>33.3ms</strong> to render.</p>
+        <p>In a 30FPS video conference, these delayed frames cause visible stuttering and audio/video desync.</p>
+    </div>
+    <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('jank-modal').close()">Close</button>
+</dialog>
 
 <dialog id="pwd-modal">
     <div style="font-size: 0.8rem; font-weight: bold; color: #aaa; text-align: center;">ADMIN PIN REQUIRED</div>
@@ -230,12 +235,17 @@
 </dialog>
 
 <script>
+    /**
+     * SERVICE WORKER REGISTRATION
+     * Enables offline capabilities and version updates.
+     */
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').then(reg => {
             reg.addEventListener('updatefound', () => {
                 const newWorker = reg.installing;
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // Display the update toast when a new version is cached
                         document.getElementById('update-toast').style.display = 'block';
                     }
                 });
@@ -243,29 +253,45 @@
         });
     }
 
+    /**
+     * CORE MONITOR ANIMATION
+     * Creates a 'Knight Rider' style oscillating bar on the canvas when benchmarking is active.
+     */
     const canvas = document.getElementById('core-monitor');
     const ctx = canvas.getContext('2d');
+    let scanPos = 0;
+    let direction = 1;
+
     function drawMonitor() {
         ctx.fillStyle = '#111';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
         if (isBenchmarking) {
-            for (let i = 0; i < 8; i++) { 
-                const intensity = (Math.random() * 0.7 + 0.3);
-                ctx.fillStyle = `rgba(0, 255, 136, ${intensity})`;
-                ctx.fillRect(i * 40 + 5, 5, 30, 30);
-            }
+            scanPos += 5 * direction;
+            if (scanPos >= canvas.width - 40 || scanPos <= 0) direction *= -1;
+            const grad = ctx.createLinearGradient(scanPos, 0, scanPos + 40, 0);
+            grad.addColorStop(0, 'rgba(231, 76, 60, 0)');
+            grad.addColorStop(0.5, 'rgba(231, 76, 60, 1)');
+            grad.addColorStop(1, 'rgba(231, 76, 60, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(scanPos, 0, 40, canvas.height);
         } else {
-            ctx.fillStyle = '#444'; ctx.font = '10px Segoe UI'; ctx.textAlign = 'center';
-            ctx.fillText('PROCESSOR IDLE', canvas.width/2, 25);
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
         requestAnimationFrame(drawMonitor);
     }
 
+    /**
+     * HARDWARE INFO INITIALIZATION
+     * Detects CPU architecture and available system memory.
+     */
     async function initHardwareInfo() {
         const cores = navigator.hardwareConcurrency || 'N/A';
         const ram = navigator.deviceMemory || 'N/A';
         document.getElementById('system-stats').innerText = `${cores} Cores / ${ram}GB RAM`;
         try {
+            // Uses User-Agent Client Hints for more accurate architecture detection
             if (navigator.userAgentData?.getHighEntropyValues) {
                 const hints = await navigator.userAgentData.getHighEntropyValues(['architecture']);
                 document.getElementById('arch').innerText = hints.architecture?.toUpperCase() || "ARM64";
@@ -273,31 +299,46 @@
         } catch (e) { document.getElementById('arch').innerText = "ARM64"; }
     }
 
+    /**
+     * PERFORMANCE MONITORING LOOP
+     * Uses requestAnimationFrame to calculate FPS and identify 'Jank' frames.
+     */
     let totalFrames = 0, jankCount = 0, totalTicks = 0, nominalTicks = 0;
     let startTime = performance.now(), lastFrameTime = performance.now(), lastFpsUpdate = performance.now();
     let isBenchmarking = false, stressWorker = null;
 
     function monitorPerformance() {
         const now = performance.now();
-        const delta = now - lastFrameTime;
+        const delta = now - lastFrameTime; // Time taken to render the last frame
         lastFrameTime = now;
+
+        // Threshold of 33.3ms correlates to 30FPS; exceeding this marks a 'Jank' frame
         if (delta > 33.3) jankCount++;
         totalFrames++;
+
+        // Update UI metrics once per second to reduce overhead
         if (now - lastFpsUpdate >= 1000) {
             const elapsedS = (now - startTime) / 1000;
             const avgFps = Math.round(totalFrames / elapsedS);
             document.getElementById('fps-avg').innerText = `${avgFps} FPS`;
             document.getElementById('jank-count').innerText = jankCount;
+            
+            // Grading logic for Smoothness Rating
             const jRatio = jankCount / totalFrames;
             const r = document.getElementById('rating');
             if (jRatio < 0.01) { r.innerText = "A"; r.style.color = "var(--mtk-green)"; }
             else if (jRatio < 0.05) { r.innerText = "B"; r.style.color = "#f1c40f"; }
-            else { r.innerText = "C"; r.style.color = "#ff4d4d"; }
+            else if (jRatio < 0.15) { r.innerText = "C"; r.style.color = "#e67e22"; }
+            else { r.innerText = "D"; r.style.color = "#ff4d4d"; }
             lastFpsUpdate = now;
         }
         requestAnimationFrame(monitorPerformance);
     }
 
+    /**
+     * BENCHMARK CONTROL
+     * Launches a dedicated Web Worker to apply synthetic load without freezing the UI thread.
+     */
     function toggleBenchmark() {
         const btn = document.getElementById('bench-btn');
         isBenchmarking = !isBenchmarking;
@@ -311,7 +352,12 @@
         }
     }
 
+    /**
+     * SYSTEM SENSORS
+     * Integrates with Battery Status API and PressureObserver API.
+     */
     async function initSensors() {
+        // Battery Tracking: Updates time-remaining estimation
         if ('getBattery' in navigator) {
             const b = await navigator.getBattery();
             const updateBattery = () => {
@@ -325,27 +371,38 @@
             b.onchargingchange = updateBattery;
             b.ondischargingtimechange = updateBattery;
         }
+
+        // PressureObserver: Crucial for Efficiency Score. Tracks OS-reported CPU load states.
         if ('PressureObserver' in window) {
             const obs = new PressureObserver((recs) => {
                 const latest = recs[recs.length - 1];
                 document.getElementById('pressure-gauge').setAttribute('data-state', latest.state);
-                totalTicks++; if (latest.state === 'nominal') nominalTicks++;
+                totalTicks++; 
+                // Efficiency = % of time OS reports 'nominal' (least stressed) state
+                if (latest.state === 'nominal') nominalTicks++;
                 document.getElementById('efficiency-score').innerText = Math.round((nominalTicks / totalTicks) * 100) + "%";
             }, { sampleInterval: 1000 });
             obs.observe('cpu');
         }
     }
 
+    /**
+     * UTILITY FUNCTIONS
+     * Admin Pin check and modal management.
+     */
     function checkPin() {
-        if (document.getElementById('pin-input').value === "1997") { location.reload(); }
+        if (document.getElementById('pin-input').value === "1234") { location.reload(); }
         else { alert("Incorrect PIN."); }
     }
     function closeModal() { document.getElementById('pwd-modal').close(); }
 
+    // INITIALIZATION SEQUENCE
     initHardwareInfo();
     initSensors();
     monitorPerformance();
     drawMonitor();
+
+    // Session Uptime Tracker
     setInterval(() => {
         const el = (performance.now() - startTime) / 1000;
         document.getElementById('uptime').innerText = `${Math.floor(el / 60)}m ${Math.floor(el % 60)}s`;
