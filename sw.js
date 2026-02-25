@@ -1,10 +1,10 @@
 /**
  * Service Worker for Benchmark Tool
- * Version: 1.1.10
+ * Version: 1.1.14
  * Updated: 2026-02-24
  */
 
-const CACHE_NAME = 'vc-bench-v1.1.10';
+const CACHE_NAME = 'vc-bench-v1.1.14';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

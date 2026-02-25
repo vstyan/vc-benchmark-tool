@@ -134,7 +134,10 @@
 <div class="card">
     <input type="text" id="device-label" value="DUT">
 
-    <div style="font-size: 0.7rem; color: #888; text-align: center; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">CPU Loading</div>
+    <div style="font-size: 0.7rem; color: #888; text-align: center; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">
+        System Pressure
+        <span class="info-trigger" onclick="document.getElementById('pressure-modal').showModal()">ⓘ</span>
+    </div>
     
     <div class="cpu-section">
         <div id="pressure-gauge" class="pressure-ring" data-state="nominal"></div>
@@ -154,7 +157,7 @@
     <div class="stat-group">
         <div class="stat-item">
             <span>
-                CPU Efficiency Score 
+                System Efficiency Score 
                 <span class="info-trigger" onclick="document.getElementById('efficiency-modal').showModal()">ⓘ</span>
             </span> 
             <span id="efficiency-score" style="color:var(--mtk-green); font-weight:bold;">100%</span>
@@ -183,11 +186,20 @@
         <canvas id="core-monitor" width="320" height="20" style="background: #111; border-radius: 10px; border: 1px solid #333; display: block; margin: 0 auto;"></canvas>
     </div>
 
-    <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS BENCHMARK</button>
+    <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS TEST</button>
     <button class="btn-action reset-btn" onclick="document.getElementById('pwd-modal').showModal()">Reset Metrics</button>
     
-    <div class="version-tag">BUILD v1.1.10</div>
+    <div class="version-tag">BUILD v1.1.14</div>
 </div>
+
+<dialog id="pressure-modal">
+    <div class="modal-title">System Pressure</div>
+    <div class="modal-body">
+        <p>This metric uses the <strong>Compute Pressure API</strong> to monitor high-level hardware stress.</p>
+        <p>Unlike raw CPU % utilization, this factors in <strong>thermal constraints</strong> and <strong>power management</strong> to report how the overall system is coping with the workload.</p>
+    </div>
+    <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('pressure-modal').close()">Close</button>
+</dialog>
 
 <dialog id="efficiency-modal">
     <div class="modal-title">Efficiency Logic</div>
@@ -314,7 +326,7 @@
             stressWorker = new Worker('stress-worker.js');
             stressWorker.postMessage('start');
         } else {
-            btn.innerText = "START STRESS BENCHMARK";
+            btn.innerText = "START STRESS TEST";
             btn.classList.remove('active');
             if (stressWorker) { stressWorker.terminate(); stressWorker = null; }
         }

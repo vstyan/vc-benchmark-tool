@@ -1,5 +1,5 @@
 /**
- * Synthetic Stress Engine v2.0
+ * Synthetic Stress Engine v2.1 - High Intensity
  */
 let isRunning = false;
 
@@ -12,20 +12,31 @@ self.onmessage = function(e) {
     }
 };
 
+/**
+ * Recursive Fibonacci
+ * Heavily stresses the call stack and instruction throughput.
+ */
+function fib(n) {
+    if (n < 2) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+
 function runHighStress() {
     if (!isRunning) return;
 
-    // WORKLOAD A: Heavy Float Math
-    for (let i = 0; i < 150000; i++) {
+    // WORKLOAD A: High-Density Float Math (1.5M iterations)
+    for (let i = 0; i < 1500000; i++) {
         Math.sqrt(Math.pow(Math.random(), Math.random()));
     }
 
-    // WORKLOAD B: Large Integer Buffer & Memory Access
-    // Simulates pixel-buffer manipulation during Video Conferencing
-    const buffer = new Int32Array(50000);
+    // WORKLOAD B: Deep Recursion Logic
+    fib(30);
+
+    // WORKLOAD C: Large Buffer & Bitwise Manipulation (1M elements)
+    const buffer = new Int32Array(1000000);
     for (let j = 0; j < buffer.length; j++) {
         buffer[j] = Math.floor(Math.random() * 1000) * j;
-        buffer[j] = (buffer[j] >> 2) ^ (buffer[j] << 1); // Bitwise operations
+        buffer[j] = (buffer[j] >> 2) ^ (buffer[j] << 1);
     }
 
     // Signal UI thread
