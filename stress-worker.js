@@ -14,7 +14,7 @@ self.onmessage = function(e) {
 
 /**
  * Recursive Fibonacci
- * Heavily stresses the call stack and instruction throughput.
+ * Stresses call stack and instruction throughput.
  */
 function fib(n) {
     if (n < 2) return n;
@@ -32,16 +32,15 @@ function runHighStress() {
     // WORKLOAD B: Deep Recursion Logic
     fib(30);
 
-    // WORKLOAD C: Large Buffer & Bitwise Manipulation (1M elements)
+    // WORKLOAD C: Large Buffer Manipulation (1M elements)
     const buffer = new Int32Array(1000000);
     for (let j = 0; j < buffer.length; j++) {
         buffer[j] = Math.floor(Math.random() * 1000) * j;
         buffer[j] = (buffer[j] >> 2) ^ (buffer[j] << 1);
     }
 
-    // Signal UI thread
     self.postMessage('heartbeat');
 
-    // Immediate recursion to maintain 100% thread utilization
+    // Immediate recursion for 100% thread saturation
     setTimeout(runHighStress, 0);
 }

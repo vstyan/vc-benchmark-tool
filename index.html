@@ -186,17 +186,45 @@
         <canvas id="core-monitor" width="320" height="20" style="background: #111; border-radius: 10px; border: 1px solid #333; display: block; margin: 0 auto;"></canvas>
     </div>
 
+    <button class="btn-action" style="background: #444; color: white;" onclick="document.getElementById('doc-modal').showModal()">VIEW DOCUMENTATION</button>
     <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS TEST</button>
     <button class="btn-action reset-btn" onclick="document.getElementById('pwd-modal').showModal()">Reset Metrics</button>
     
-    <div class="version-tag">BUILD v1.1.14</div>
+    <div class="version-tag">BUILD v1.1.15</div>
 </div>
+
+<dialog id="doc-modal" style="width: 90%; max-width: 500px;">
+    <div class="modal-title">App Documentation</div>
+    <div class="modal-body" style="max-height: 400px; overflow-y: auto; text-align: left;">
+        <h4 style="color: var(--mtk-orange);">Stress Test Mechanics</h4>
+        <p>The test saturates a CPU thread across three domains to simulate heavy multitasking:</p>
+        <ul>
+            <li><strong>FPU Stress:</strong> 1.5M iterations of algebraic operations testing the Floating Point Unit.</li>
+            <li><strong>Recursive Logic:</strong> Recursive Fibonacci ($F_{30}$) to stress the call stack and branch predictor.</li>
+            <li><strong>Memory/Cache:</strong> Bitwise operations on a 1M element buffer to stress L1/L2 cache and RAM bandwidth.</li>
+        </ul>
+        
+        
+        <h4 style="color: var(--mtk-orange);">Smoothness Grading</h4>
+        <p>Grades are based on the ratio of Jank Frames to Total Frames:</p>
+        <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #444;"><td><strong>A</strong></td><td>< 1% Jank</td><td>Excellent</td></tr>
+            <tr style="border-bottom: 1px solid #444;"><td><strong>B</strong></td><td>< 5% Jank</td><td>Good</td></tr>
+            <tr style="border-bottom: 1px solid #444;"><td><strong>C</strong></td><td>< 15% Jank</td><td>Fair</td></tr>
+            <tr><td><strong>D</strong></td><td>> 15% Jank</td><td>Poor</td></tr>
+        </table>
+
+        <h4 style="color: var(--mtk-orange);">System Efficiency</h4>
+        <p>Measured as the percentage of time the system maintains a <strong>Nominal</strong> pressure state. This highlights thermal sustainability.</p>
+    </div>
+    <button class="btn-action" style="background: var(--mtk-orange); color: white;" onclick="document.getElementById('doc-modal').close()">Close Documentation</button>
+</dialog>
 
 <dialog id="pressure-modal">
     <div class="modal-title">System Pressure</div>
     <div class="modal-body">
         <p>This metric uses the <strong>Compute Pressure API</strong> to monitor high-level hardware stress.</p>
-        <p>Unlike raw CPU % utilization, this factors in <strong>thermal constraints</strong> and <strong>power management</strong> to report how the overall system is coping with the workload.</p>
+        <p>It factors in <strong>thermal constraints</strong> and <strong>power management</strong> to report how the overall system is coping.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('pressure-modal').close()">Close</button>
 </dialog>
@@ -204,8 +232,8 @@
 <dialog id="efficiency-modal">
     <div class="modal-title">Efficiency Logic</div>
     <div class="modal-body">
-        <p>This score represents the <strong>Percentage of time in Nominal state</strong> during the current session.</p>
-        <p>A higher percentage indicates the processor is handling the workload within its most energy-efficient thermal and power envelope.</p>
+        <p>This score represents the <strong>Percentage of time in Nominal state</strong>.</p>
+        <p>A higher percentage indicates handled workload within energy-efficient thermal envelopes.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('efficiency-modal').close()">Close</button>
 </dialog>
@@ -214,12 +242,6 @@
     <div class="modal-title">Smoothness Rating</div>
     <div class="modal-body">
         <p>Evaluates visual consistency based on the ratio of <strong>Jank Frames</strong> to <strong>Total Frames</strong>.</p>
-        <ul style="padding-left: 18px;">
-            <li><strong>Grade A:</strong> < 1% Jank</li>
-            <li><strong>Grade B:</strong> < 5% Jank</li>
-            <li><strong>Grade C:</strong> < 15% Jank</li>
-            <li><strong>Grade D:</strong> > 15% Jank</li>
-        </ul>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('smoothness-modal').close()">Close</button>
 </dialog>
@@ -227,8 +249,7 @@
 <dialog id="jank-modal">
     <div class="modal-title">Total Jank</div>
     <div class="modal-body">
-        <p>A <strong>Jank Frame</strong> is defined as any frame that takes longer than <strong>33.3ms</strong> to render.</p>
-        <p>In a 30FPS video conference, these delayed frames cause visible stuttering and audio/video desync.</p>
+        <p>A <strong>Jank Frame</strong> takes longer than <strong>33.3ms</strong> to render.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('jank-modal').close()">Close</button>
 </dialog>
