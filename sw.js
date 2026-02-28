@@ -4,7 +4,7 @@
  * Updated: 2026-02-27
  */
 
-const CACHE_NAME = 'vc-bench-v1.1.17';
+const CACHE_NAME = 'vc-bench-v1.1.15';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
