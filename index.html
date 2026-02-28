@@ -97,9 +97,7 @@
         #bench-btn.active { background: #e74c3c; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        /* Style for secondary documentation button */
         .btn-secondary { background: #444; color: white; }
-
         .reset-btn { background: transparent; color: #666; font-size: 0.7rem; text-decoration: underline; }
         .version-tag { font-size: 0.6rem; color: #444; text-align: center; margin-top: 15px; letter-spacing: 1px; }
 
@@ -159,25 +157,16 @@
 
     <div class="stat-group">
         <div class="stat-item">
-            <span>
-                System Efficiency Score 
-                <span class="info-trigger" onclick="document.getElementById('efficiency-modal').showModal()">ⓘ</span>
-            </span> 
+            <span>System Efficiency Score <span class="info-trigger" onclick="document.getElementById('efficiency-modal').showModal()">ⓘ</span></span> 
             <span id="efficiency-score" style="color:var(--mtk-green); font-weight:bold;">100%</span>
         </div>
         <div class="stat-item">
-            <div>
-                <span>Smoothness Rating:</span> 
-                <span class="info-trigger" onclick="document.getElementById('smoothness-modal').showModal()">ⓘ</span>
-            </div>
+            <div><span>Smoothness Rating:</span> <span class="info-trigger" onclick="document.getElementById('smoothness-modal').showModal()">ⓘ</span></div>
             <span id="rating" style="font-weight:900; color:var(--mtk-green);">A</span>
         </div>
         <div class="stat-item"><span>Avg Session FPS:</span> <span id="fps-avg" style="color:#00d4ff; font-weight:bold;">--</span></div>
         <div class="stat-item">
-            <div>
-                <span>Total Jank:</span> 
-                <span class="info-trigger" onclick="document.getElementById('jank-modal').showModal()">ⓘ</span>
-            </div>
+            <div><span>Total Jank:</span> <span class="info-trigger" onclick="document.getElementById('jank-modal').showModal()">ⓘ</span></div>
             <span id="jank-count" style="color:#ff4d4d; font-weight:bold;">0</span>
         </div>
         <div class="stat-item"><span>Architecture:</span> <span id="arch">Analyzing...</span></div>
@@ -198,46 +187,19 @@
 
 <dialog id="doc-modal" style="width: 90%; max-width: 500px;">
     <div class="modal-title">App Documentation</div>
-    <div class="modal-body" style="max-height: 400px; overflow-y: auto; text-align: left;">
-        <h4 style="color: var(--mtk-orange);">Stress Test Mechanics</h4>
-        <p>The test saturates a CPU thread across three domains to simulate heavy multitasking:</p>
-        <ul>
-            <li><strong>FPU Stress:</strong> 1.5M iterations of algebraic operations testing the Floating Point Unit.</li>
-            <li><strong>Recursive Logic:</strong> Recursive Fibonacci ($F_{30}$) to stress the call stack and branch predictor.</li>
-            <li><strong>Memory/Cache:</strong> Bitwise operations on a 1M element buffer to stress L1/L2 cache and RAM bandwidth.</li>
-        </ul>
-        
-        <h4 style="color: var(--mtk-orange);">Jank Definition (33.3ms vs 16.7ms)</h4>
-        <p>
-            Standard UI jank is typically defined as <strong>16.7ms (60Hz)</strong>. However, this tool uses a relaxed 
-            threshold of <strong>33.3ms</strong>. 
-        </p>
-        <p>
-            This is intentional: we are measuring the jank while the system is <strong>running under heavy workloads</strong>. 
-            The goal is to evaluate if the system can maintain a stable <strong>30 FPS</strong> (the baseline for smooth 
-            video conferencing) even during peak stress.
-        </p>
-
-        <h4 style="color: var(--mtk-orange);">Smoothness Grading</h4>
-        <p>Grades are based on the ratio of Jank Frames to Total Frames:</p>
-        <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
-            <tr style="border-bottom: 1px solid #444; height: 30px;"><td><strong>A</strong></td><td>< 1% Jank</td><td>Excellent</td></tr>
-            <tr style="border-bottom: 1px solid #444; height: 30px;"><td><strong>B</strong></td><td>< 5% Jank</td><td>Good</td></tr>
-            <tr style="border-bottom: 1px solid #444; height: 30px;"><td><strong>C</strong></td><td>< 15% Jank</td><td>Fair</td></tr>
-            <tr style="height: 30px;"><td><strong>D</strong></td><td>> 15% Jank</td><td>Poor</td></tr>
-        </table>
-
-        <h4 style="color: var(--mtk-orange);">System Efficiency</h4>
-        <p>Measured as the percentage of time the system maintains a <strong>Nominal</strong> pressure state. This highlights thermal sustainability.</p>
+    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+        <h4 style="color: var(--mtk-orange);">Jank Definition (33.3ms)</h4>
+        <p>This tool uses a relaxed threshold of <strong>33.3ms</strong> because it evaluates performance <strong>under heavy workloads</strong>. The goal is to ensure stable 30 FPS video conferencing baseline.</p>
+        <h4 style="color: var(--mtk-orange);">Critical Alarm</h4>
+        <p>A pulsating beep triggers if the system hits the <strong>Critical</strong> state to warn of thermal throttling.</p>
     </div>
-    <button class="btn-action" style="background: var(--mtk-orange); color: white;" onclick="document.getElementById('doc-modal').close()">Close Documentation</button>
+    <button class="btn-action" style="background: var(--mtk-orange); color: white;" onclick="document.getElementById('doc-modal').close()">Close</button>
 </dialog>
 
 <dialog id="pressure-modal">
     <div class="modal-title">System Pressure</div>
     <div class="modal-body">
-        <p>This metric uses the <strong>Compute Pressure API</strong> to monitor high-level hardware stress.</p>
-        <p>It factors in <strong>thermal constraints</strong> and <strong>power management</strong> to report how the overall system is coping.</p>
+        <p>Uses the <strong>Compute Pressure API</strong> to monitor high-level hardware stress and thermals.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('pressure-modal').close()">Close</button>
 </dialog>
@@ -245,8 +207,7 @@
 <dialog id="efficiency-modal">
     <div class="modal-title">Efficiency Logic</div>
     <div class="modal-body">
-        <p>This score represents the <strong>Percentage of time in Nominal state</strong>.</p>
-        <p>A higher percentage indicates handled workload within energy-efficient thermal envelopes.</p>
+        <p>Percentage of time the CPU stays in the <strong>Nominal</strong> (cool/efficient) state.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('efficiency-modal').close()">Close</button>
 </dialog>
@@ -254,7 +215,7 @@
 <dialog id="smoothness-modal">
     <div class="modal-title">Smoothness Rating</div>
     <div class="modal-body">
-        <p>Evaluates visual consistency based on the ratio of <strong>Jank Frames</strong> to <strong>Total Frames</strong>.</p>
+        <p>A=Excellent, B=Good, C=Fair, D=Poor. Based on frame consistency.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('smoothness-modal').close()">Close</button>
 </dialog>
@@ -262,7 +223,7 @@
 <dialog id="jank-modal">
     <div class="modal-title">Total Jank</div>
     <div class="modal-body">
-        <p>A <strong>Jank Frame</strong> takes longer than <strong>33.3ms</strong> to render during this stress test.</p>
+        <p>A count of frames taking longer than <strong>33.3ms</strong> to render.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('jank-modal').close()">Close</button>
 </dialog>
@@ -277,17 +238,117 @@
 </dialog>
 
 <script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').then(reg => {
-            reg.addEventListener('updatefound', () => {
-                const newWorker = reg.installing;
-                newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        document.getElementById('update-toast').style.display = 'block';
-                    }
-                });
-            });
-        });
+    // --- GLOBAL VARIABLES ---
+    let totalFrames = 0, jankCount = 0, totalTicks = 0, nominalTicks = 0;
+    let startTime = performance.now(), lastFrameTime = performance.now(), lastFpsUpdate = performance.now();
+    let isBenchmarking = false, stressWorker = null;
+    let audioCtx = null, pulseInterval = null;
+
+    // --- AUDIO ALARM LOGIC ---
+    function startAlarm() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (pulseInterval) return;
+
+        pulseInterval = setInterval(() => {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }, 500);
+    }
+
+    function stopAlarm() {
+        if (pulseInterval) {
+            clearInterval(pulseInterval);
+            pulseInterval = null;
+        }
+    }
+
+    // --- MAIN BENCHMARK FUNCTION ---
+    function toggleBenchmark() {
+        const btn = document.getElementById('bench-btn');
+        isBenchmarking = !isBenchmarking;
+
+        // Ensure AudioCtx is active on first click
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        if (isBenchmarking) {
+            btn.innerText = "STOP STRESS TEST";
+            btn.classList.add('active');
+            stressWorker = new Worker('stress-worker.js');
+            stressWorker.postMessage('start');
+        } else {
+            btn.innerText = "START STRESS TEST";
+            btn.classList.remove('active');
+            stopAlarm();
+            if (stressWorker) {
+                stressWorker.terminate();
+                stressWorker = null;
+            }
+        }
+    }
+
+    // --- SENSOR INITIALIZATION ---
+    async function initSensors() {
+        if ('getBattery' in navigator) {
+            const b = await navigator.getBattery();
+            const updateBattery = () => {
+                const t = document.getElementById('time-left');
+                if (b.dischargingTime !== Infinity && !b.charging) {
+                    const mins = Math.floor(b.dischargingTime / 60);
+                    t.innerText = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+                } else { t.innerText = b.charging ? "Charging" : "Calculating..."; }
+            };
+            updateBattery();
+            b.onchargingchange = updateBattery;
+            b.ondischargingtimechange = updateBattery;
+        }
+
+        if ('PressureObserver' in window) {
+            const obs = new PressureObserver((recs) => {
+                const latest = recs[recs.length - 1];
+                document.getElementById('pressure-gauge').setAttribute('data-state', latest.state);
+                
+                // Pulsating Alarm on Critical
+                if (latest.state === 'critical') startAlarm();
+                else stopAlarm();
+
+                totalTicks++; 
+                if (latest.state === 'nominal') nominalTicks++;
+                document.getElementById('efficiency-score').innerText = Math.round((nominalTicks / totalTicks) * 100) + "%";
+            }, { sampleInterval: 1000 });
+            obs.observe('cpu');
+        }
+    }
+
+    // --- UI MONITORING ---
+    function monitorPerformance() {
+        const now = performance.now();
+        const delta = now - lastFrameTime;
+        lastFrameTime = now;
+        if (delta > 33.3) jankCount++;
+        totalFrames++;
+        if (now - lastFpsUpdate >= 1000) {
+            const elapsedS = (now - startTime) / 1000;
+            const avgFps = Math.round(totalFrames / elapsedS);
+            document.getElementById('fps-avg').innerText = `${avgFps} FPS`;
+            document.getElementById('jank-count').innerText = jankCount;
+            const jRatio = jankCount / totalFrames;
+            const r = document.getElementById('rating');
+            if (jRatio < 0.01) { r.innerText = "A"; r.style.color = "var(--mtk-green)"; }
+            else if (jRatio < 0.05) { r.innerText = "B"; r.style.color = "#f1c40f"; }
+            else if (jRatio < 0.15) { r.innerText = "C"; r.style.color = "#e67e22"; }
+            else { r.innerText = "D"; r.style.color = "#ff4d4d"; }
+            lastFpsUpdate = now;
+        }
+        requestAnimationFrame(monitorPerformance);
     }
 
     const canvas = document.getElementById('core-monitor');
@@ -325,80 +386,18 @@
         } catch (e) { document.getElementById('arch').innerText = "ARM64"; }
     }
 
-    let totalFrames = 0, jankCount = 0, totalTicks = 0, nominalTicks = 0;
-    let startTime = performance.now(), lastFrameTime = performance.now(), lastFpsUpdate = performance.now();
-    let isBenchmarking = false, stressWorker = null;
-
-    function monitorPerformance() {
-        const now = performance.now();
-        const delta = now - lastFrameTime;
-        lastFrameTime = now;
-        if (delta > 33.3) jankCount++;
-        totalFrames++;
-        if (now - lastFpsUpdate >= 1000) {
-            const elapsedS = (now - startTime) / 1000;
-            const avgFps = Math.round(totalFrames / elapsedS);
-            document.getElementById('fps-avg').innerText = `${avgFps} FPS`;
-            document.getElementById('jank-count').innerText = jankCount;
-            const jRatio = jankCount / totalFrames;
-            const r = document.getElementById('rating');
-            if (jRatio < 0.01) { r.innerText = "A"; r.style.color = "var(--mtk-green)"; }
-            else if (jRatio < 0.05) { r.innerText = "B"; r.style.color = "#f1c40f"; }
-            else if (jRatio < 0.15) { r.innerText = "C"; r.style.color = "#e67e22"; }
-            else { r.innerText = "D"; r.style.color = "#ff4d4d"; }
-            lastFpsUpdate = now;
-        }
-        requestAnimationFrame(monitorPerformance);
-    }
-
-    function toggleBenchmark() {
-        const btn = document.getElementById('bench-btn');
-        isBenchmarking = !isBenchmarking;
-        if (isBenchmarking) {
-            btn.innerText = "STOP STRESS TEST";
-            btn.classList.add('active');
-            stressWorker = new Worker('stress-worker.js');
-            stressWorker.postMessage('start');
-        } else {
-            btn.innerText = "START STRESS TEST";
-            btn.classList.remove('active');
-            if (stressWorker) { stressWorker.terminate(); stressWorker = null; }
-        }
-    }
-
-    async function initSensors() {
-        if ('getBattery' in navigator) {
-            const b = await navigator.getBattery();
-            const updateBattery = () => {
-                const t = document.getElementById('time-left');
-                if (b.dischargingTime !== Infinity && !b.charging) {
-                    const mins = Math.floor(b.dischargingTime / 60);
-                    t.innerText = `${Math.floor(mins / 60)}h ${mins % 60}m`;
-                } else { t.innerText = b.charging ? "Charging" : "Calculating..."; }
-            };
-            updateBattery();
-            b.onchargingchange = updateBattery;
-            b.ondischargingtimechange = updateBattery;
-        }
-
-        if ('PressureObserver' in window) {
-            const obs = new PressureObserver((recs) => {
-                const latest = recs[recs.length - 1];
-                document.getElementById('pressure-gauge').setAttribute('data-state', latest.state);
-                totalTicks++; 
-                if (latest.state === 'nominal') nominalTicks++;
-                document.getElementById('efficiency-score').innerText = Math.round((nominalTicks / totalTicks) * 100) + "%";
-            }, { sampleInterval: 1000 });
-            obs.observe('cpu');
-        }
-    }
-
     function checkPin() {
-        if (document.getElementById('pin-input').value === "1234") { location.reload(); }
-        else { alert("Incorrect PIN."); }
+        if (document.getElementById('pin-input').value === "1234") location.reload();
+        else alert("Incorrect PIN.");
     }
     function closeModal() { document.getElementById('pwd-modal').close(); }
 
+    // --- SERVICE WORKER ---
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
+
+    // --- STARTUP ---
     initHardwareInfo();
     initSensors();
     monitorPerformance();
