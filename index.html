@@ -97,6 +97,9 @@
         #bench-btn.active { background: #e74c3c; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
+        /* Style for secondary documentation button */
+        .btn-secondary { background: #444; color: white; }
+
         .reset-btn { background: transparent; color: #666; font-size: 0.7rem; text-decoration: underline; }
         .version-tag { font-size: 0.6rem; color: #444; text-align: center; margin-top: 15px; letter-spacing: 1px; }
 
@@ -186,8 +189,8 @@
         <canvas id="core-monitor" width="320" height="20" style="background: #111; border-radius: 10px; border: 1px solid #333; display: block; margin: 0 auto;"></canvas>
     </div>
 
-    <button class="btn-action" style="background: #444; color: white;" onclick="document.getElementById('doc-modal').showModal()">VIEW DOCUMENTATION</button>
     <button id="bench-btn" class="btn-action" onclick="toggleBenchmark()">START STRESS TEST</button>
+    <button class="btn-action btn-secondary" onclick="document.getElementById('doc-modal').showModal()">VIEW DOCUMENTATION</button>
     <button class="btn-action reset-btn" onclick="document.getElementById('pwd-modal').showModal()">Reset Metrics</button>
     
     <div class="version-tag">BUILD v1.1.15</div>
@@ -204,14 +207,24 @@
             <li><strong>Memory/Cache:</strong> Bitwise operations on a 1M element buffer to stress L1/L2 cache and RAM bandwidth.</li>
         </ul>
         
-        
+        <h4 style="color: var(--mtk-orange);">Jank Definition (33.3ms vs 16.7ms)</h4>
+        <p>
+            Standard UI jank is typically defined as <strong>16.7ms (60Hz)</strong>. However, this tool uses a relaxed 
+            threshold of <strong>33.3ms</strong>. 
+        </p>
+        <p>
+            This is intentional: we are measuring the jank while the system is <strong>running under heavy workloads</strong>. 
+            The goal is to evaluate if the system can maintain a stable <strong>30 FPS</strong> (the baseline for smooth 
+            video conferencing) even during peak stress.
+        </p>
+
         <h4 style="color: var(--mtk-orange);">Smoothness Grading</h4>
         <p>Grades are based on the ratio of Jank Frames to Total Frames:</p>
         <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
-            <tr style="border-bottom: 1px solid #444;"><td><strong>A</strong></td><td>< 1% Jank</td><td>Excellent</td></tr>
-            <tr style="border-bottom: 1px solid #444;"><td><strong>B</strong></td><td>< 5% Jank</td><td>Good</td></tr>
-            <tr style="border-bottom: 1px solid #444;"><td><strong>C</strong></td><td>< 15% Jank</td><td>Fair</td></tr>
-            <tr><td><strong>D</strong></td><td>> 15% Jank</td><td>Poor</td></tr>
+            <tr style="border-bottom: 1px solid #444; height: 30px;"><td><strong>A</strong></td><td>< 1% Jank</td><td>Excellent</td></tr>
+            <tr style="border-bottom: 1px solid #444; height: 30px;"><td><strong>B</strong></td><td>< 5% Jank</td><td>Good</td></tr>
+            <tr style="border-bottom: 1px solid #444; height: 30px;"><td><strong>C</strong></td><td>< 15% Jank</td><td>Fair</td></tr>
+            <tr style="height: 30px;"><td><strong>D</strong></td><td>> 15% Jank</td><td>Poor</td></tr>
         </table>
 
         <h4 style="color: var(--mtk-orange);">System Efficiency</h4>
@@ -249,7 +262,7 @@
 <dialog id="jank-modal">
     <div class="modal-title">Total Jank</div>
     <div class="modal-body">
-        <p>A <strong>Jank Frame</strong> takes longer than <strong>33.3ms</strong> to render.</p>
+        <p>A <strong>Jank Frame</strong> takes longer than <strong>33.3ms</strong> to render during this stress test.</p>
     </div>
     <button class="btn-action" style="background: #333; color: white;" onclick="document.getElementById('jank-modal').close()">Close</button>
 </dialog>
